@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Wall Street English — Vocabulary Flashcards</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F7F4EC;
+    --card:#FFFDF8;
+    --ink:#232019;
+    --ink-soft:#5B564C;
+    --rule:#C9C2AE;
+    --forest:#2C4A3E;
+    --forest-ink:#173428;
+    --forest-tint:#E4ECE7;
+    --gold:#A8763E;
+    --gold-tint:#F3E7D6;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Mono',monospace;padding:1.5rem 0;}
+  .wrap{max-width:640px;margin:0 auto;padding:0 1rem;}
+  .masthead{display:flex;align-items:baseline;justify-content:space-between;border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:1.25rem;}
+  .masthead h1{font-family:'Source Serif 4',serif;font-size:22px;font-weight:600;margin:0;letter-spacing:.2px;}
+  .masthead span{font-size:11px;color:var(--ink-soft);}
+  .tabs{display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;}
+  .tab{font-family:'IBM Plex Mono',monospace;font-size:12px;padding:6px 12px;border:1px solid var(--rule);border-radius:2px;background:var(--card);color:var(--ink-soft);cursor:pointer;}
+  .tab.active{background:var(--forest);color:#fff;border-color:var(--forest);}
+  .counter{font-size:12px;color:var(--ink-soft);text-align:center;margin-bottom:10px;}
+  .stage{perspective:1400px;height:300px;margin-bottom:1.1rem;}
+  .card{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.4,.2,.2,1);cursor:pointer;}
+  .card.flipped{transform:rotateY(180deg);}
+  .face{position:absolute;inset:0;backface-visibility:hidden;background:var(--card);border:1px solid var(--rule);border-radius:6px;padding:1.5rem;display:flex;flex-direction:column;box-shadow:0 1px 0 var(--rule);}
+  .face::before{content:'';position:absolute;top:14px;left:50%;transform:translateX(-50%);width:16px;height:16px;border-radius:50%;background:var(--paper);border:1px solid var(--rule);}
+  .front{justify-content:center;align-items:center;text-align:center;gap:.6rem;}
+  .back{transform:rotateY(180deg);justify-content:flex-start;padding-top:2.4rem;}
+  .tag{font-size:10px;letter-spacing:.08em;text-transform:uppercase;background:var(--gold-tint);color:var(--gold);padding:3px 8px;border-radius:2px;position:absolute;top:14px;left:14px;}
+  .pos{font-size:11px;color:var(--ink-soft);position:absolute;top:14px;right:14px;font-style:italic;}
+  .term{font-family:'Source Serif 4',serif;font-size:28px;font-weight:600;line-height:1.25;}
+  .hint{font-size:11px;color:var(--ink-soft);margin-top:6px;}
+  .def{font-family:'Source Serif 4',serif;font-size:16px;line-height:1.55;margin:0 0 .9rem;}
+  .kr{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--gold);background:var(--gold-tint);display:inline-block;padding:3px 9px;border-radius:2px;margin-bottom:.8rem;}
+  .ex{border-left:2px solid var(--forest);padding-left:10px;font-size:13px;color:var(--forest-ink);line-height:1.5;font-style:italic;}
+  .controls{display:flex;align-items:center;justify-content:center;gap:10px;}
+  button.nav{font-family:'IBM Plex Mono',monospace;font-size:13px;padding:8px 16px;border:1px solid var(--ink);background:var(--card);color:var(--ink);border-radius:2px;cursor:pointer;}
+  button.nav:hover{background:var(--forest-tint);}
+  button.nav:active{transform:scale(.98);}
+  button.shuffle,button.sort{border-color:var(--rule);color:var(--ink-soft);}
+  button.sort.active{background:var(--forest);color:#fff;border-color:var(--forest);}
+  .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h2 class="sr-only">Interactive flashcard deck of finance vocabulary and collocations, sorted by category, with a flip-to-reveal definition and example sentence, plus navigation and shuffle controls.</h2>
+  <div class="masthead">
+    <h1>Wall Street English</h1>
+    <span id="dateline">VOL. 1 + 2 · VOCAB &amp; COLLOCATIONS</span>
+  </div>
+  <div class="tabs" id="tabs"></div>
+  <div class="counter" id="counter"></div>
+  <div class="stage">
+    <div class="card" id="card">
+      <div class="face front">
+        <div class="tag" id="tagFront"></div>
+        <div class="pos" id="posFront"></div>
+        <div class="term" id="termFront"></div>
+        <div class="hint">tap card to reveal definition</div>
+      </div>
+      <div class="face back">
+        <div class="tag" id="tagBack"></div>
+        <div class="pos" id="posBack"></div>
+        <p class="def" id="defBack"></p>
+        <div class="kr" id="krBack"></div>
+        <div class="ex" id="exBack"></div>
+      </div>
+    </div>
+  </div>
+  <div class="controls">
+    <button class="nav" id="prev"><i class="ti ti-arrow-left" aria-hidden="true"></i> prev</button>
+    <button class="nav shuffle" id="shuffle">shuffle</button>
+    <button class="nav sort" id="sort">A→Z</button>
+    <button class="nav" id="next">next <i class="ti ti-arrow-right" aria-hidden="true"></i></button>
+  </div>
+</div>
+<script>
+const DECK = [
+ {cat:"core", pos:"noun phrase", term:"momentum stock", def:"A stock whose price has been rising strongly and that investors expect to keep climbing in the near term.", kr:"상승 모멘텀을 타는 주식", ex:"Nvidia and Micron were named top momentum stocks heading into the second half of 2026."},
+ {cat:"core", pos:"noun", term:"price target", def:"The price level an analyst expects a stock to reach within a set time frame, usually 12 months.", kr:"목표주가", ex:"Analysts set a price target of $300 on Snowflake."},
+ {cat:"core", pos:"noun phrase", term:"consensus rating", def:"The overall recommendation — buy, hold, or sell — formed by averaging the views of all analysts covering a stock.", kr:"애널리스트 종합(컨센서스) 투자의견", ex:"Broadcom carries a strong buy consensus rating from 48 analysts."},
+ {cat:"core", pos:"noun", term:"expense ratio", def:"The annual fee a fund charges its investors, shown as a percentage of the money invested.", kr:"총보수(운용보수) 비율", ex:"VOO's expense ratio of 0.03% is far lower than most actively managed funds."},
+ {cat:"core", pos:"noun phrase", term:"assets under management (AUM)", def:"The total market value of all the investments a fund or firm manages on behalf of clients.", kr:"운용자산총액", ex:"VOO recently became the first standalone ETF to cross $1 trillion in assets under management."},
+ {cat:"core", pos:"noun", term:"drawdown", def:"The decline in an investment's value from its highest point to its lowest point before it recovers.", kr:"고점 대비 최대 낙폭", ex:"VGT suffered a much steeper drawdown than VOO during the 2022 downturn."},
+ {cat:"core", pos:"noun / verb", term:"diversification / diversify", def:"Spreading money across different assets so that a loss in one is cushioned by stability or gains in others.", kr:"분산투자(하다)", ex:"Adding VXUS was suggested as a way to diversify beyond U.S.-only holdings."},
+ {cat:"core", pos:"noun", term:"concentration risk", def:"The danger of having too much exposure to a single stock, sector, or theme, so one setback hurts the whole portfolio.", kr:"쏠림(집중) 위험", ex:"Owning VOO and VGT together increases concentration risk in the technology sector."},
+ {cat:"core", pos:"verb / noun", term:"rebalance / rebalancing", def:"Adjusting a portfolio's holdings back toward its original target weights after they've drifted due to market moves.", kr:"비중 재조정(리밸런싱)", ex:"An equal-weight blend assumes periodic rebalancing across all four funds."},
+ {cat:"core", pos:"adjective", term:"currency-hedged / -unhedged", def:"Describes whether a fund protects investors from exchange-rate swings (hedged) or leaves that risk fully exposed (unhedged).", kr:"환헤지형 / 환노출형", ex:"TIGER 미국S&P500 is a currency-unhedged fund, so the KRW/USD rate directly affects its returns."},
+ {cat:"core", pos:"noun", term:"breadth", def:"In markets, how widely stocks are participating in a move — whether the whole market is joining a rally or sell-off, or just a few names are driving it.", kr:"시장 참여 폭", ex:"When the S&P 500 hits new highs but only a handful of mega-caps like Nvidia, Apple, and Microsoft are advancing, breadth is poor even though the headline index looks strong."},
+ {cat:"core", pos:"noun", term:"cohort", def:"A group of items sharing a common characteristic and analyzed together; in investing, a set of stocks bundled under a single label such as a sector or theme.", kr:"집단, 코호트", ex:"Cohorts built by ranking stocks on quality factors like interest coverage and cash flow explain more of the cross-sectional variation in performance than cohorts built from GICS sector membership."},
+ {cat:"core", pos:"adjective", term:"monolithic", def:"Treated as one single, uniform block, as if all members behaved the same, with important internal differences ignored.", kr:"획일적인, 단일 덩어리 같은", ex:"'Monolithic cohort' is the pejorative here — lumping stocks together as 'the Mag 7' or 'tech' treats those groups as if they were homogeneous."},
+ {cat:"core", pos:"verb / noun", term:"overlay", def:"To impose one classification on top of another and let it dominate the grouping; in investing, applying factor filters over sector labels so the factors, not the sectors, define the buckets.", kr:"덧씌우다, 오버레이(적용하다)", ex:"Overlaying quality factors like interest coverage and cash flow on top of GICS sector labels separates the financially resilient names from the weak ones inside the same 'tech' bucket."},
+ {cat:"core", pos:"noun", term:"dispersion", def:"The degree to which values in a set are spread apart; in markets, how widely returns diverge across stocks over a given period.", kr:"편차, 분산도", ex:"Sector and Mag 7 labels are the wrong lens for the current regime; factor overlays reveal the real dispersion in performance and risk."},
+ {cat:"core", pos:"noun", term:"divergence", def:"A widening gap between two things that usually move together — such as different groups of stocks, or an index and the average stock inside it.", kr:"괴리, 다이버전스", ex:"Underneath there's significant activity — sector rotation, changing leadership, or sharp divergences between groups of stocks."},
+ {cat:"core", pos:"noun / adjective", term:"pejorative", def:"A word or expression that carries clear disapproval or criticism of what it refers to.", kr:"부정적/경멸적 표현", ex:"'Monolithic cohort' is used as a pejorative to criticize the habit of treating the Mag 7 or the whole 'tech' sector as if every name inside behaved the same."},
+ {cat:"core", pos:"noun phrase", term:"earnings season", def:"The recurring several-week stretch, four times a year, when most public companies release their quarterly financial results.", kr:"실적 발표 시즌", ex:"Earnings season kicked off this week with major U.S. banks reporting strong second-quarter numbers."},
+ {cat:"core", pos:"adjective/adverb phrase", term:"year-over-year (YoY)", def:"Comparing a figure to the same period one year earlier, used to measure growth or decline over a full annual cycle.", kr:"전년 동기 대비", ex:"Analysts expected S&P 500 earnings to grow almost 24% year-over-year in the second quarter."},
+ {cat:"core", pos:"noun phrase", term:"consensus estimates", def:"The average of individual analysts' numeric forecasts for a company's earnings or revenue — distinct from a buy/hold/sell rating.", kr:"시장 컨센서스 예상 실적치", ex:"Investors this earnings season are watching whether firms can clear consensus estimates, not just avoid missing them."},
+ {cat:"core", pos:"noun phrase", term:"reporting period", def:"The specific quarter or fiscal period a company is releasing financial results for.", kr:"실적 발표 대상 기간", ex:"Firms had already raised their own outlook heading into this reporting period, reflecting growing confidence."},
+ {cat:"core", pos:"noun / verb", term:"churn", def:"Back-and-forth trading activity where prices move a lot in both directions but end up going nowhere in net terms — lots of motion, no progress.", kr:"방향성 없는 잔파도 같은 등락", ex:"The macro backdrop and equity markets have lacked direction, trading sideways with elevated churn for the past couple of months."},
+ {cat:"core", pos:"adjective", term:"hawkish / dovish", def:"Hawkish describes a stance favoring higher rates and tighter policy to fight inflation; dovish describes the opposite — favoring lower rates and looser policy to support growth and jobs.", kr:"매파적 / 비둘기파적", ex:"By the time the Fed pivoted to a hawkish stance, critics argued the horse was already out of the barn, with inflation expectations firmly embedded in wage negotiations."},
+ {cat:"core", pos:"verb / noun", term:"pivot", def:"A sharp, deliberate change of direction in policy, strategy, or stance — usually after publicly committing to the opposite course.", kr:"급선회, 방향 전환(피벗)", ex:"By the time the Fed pivoted to a hawkish stance, critics argued the horse was already out of the barn, with inflation expectations firmly embedded in wage negotiations."},
+ {cat:"core", pos:"adjective", term:"entrenched", def:"So firmly established that it is very difficult to dislodge or reverse — used of behaviors, expectations, or positions that have become the default.", kr:"뿌리 깊게 자리 잡은, 고착된", ex:"Some analysts argue that the central bank raised rates when the horse was already out of the barn, as inflation had already become deeply entrenched."},
+ {cat:"core", pos:"adjective", term:"choppy", def:"Describes trading that moves erratically up and down in short bursts, without settling into a clear trend in either direction.", kr:"방향성 없이 오르내리는, 변동이 심한", ex:"For the past couple of months, the macro backdrop and broader equities have been mired in a directionless, choppy range."},
+
+ {cat:"colloc", pos:"verb phrase", term:"coin an acronym / a term", def:"To invent a new word, phrase, or abbreviation that becomes widely used.", kr:"신조어(약어)를 만들다", ex:"A Bank of America analyst coined the acronym MANGO back in 2022."},
+ {cat:"colloc", pos:"noun phrase", term:"top pick", def:"An investment that analysts recommend most strongly among a group of options.", kr:"최선호주", ex:"Oracle was named a top pick for the second half of 2026 despite its recent share-price decline."},
+ {cat:"colloc", pos:"noun phrase", term:"basket of stocks", def:"A group of individual stocks bundled together and discussed or traded as a single idea.", kr:"종목 바스켓(묶음)", ex:"MANGO began as a basket of five semiconductor stocks — Marvell, AMD, Nvidia, GlobalFoundries, and ON Semiconductor."},
+ {cat:"colloc", pos:"adjective pair", term:"cyclical vs. structural (demand)", def:"Cyclical refers to short-term ups and downs tied to the economic cycle; structural refers to a long-term, underlying shift that outlasts any single cycle.", kr:"경기순환적 vs. 구조적(추세적)", ex:"ON Semiconductor went through a cyclical downturn in auto chips, even as structural AI demand kept growing."},
+ {cat:"colloc", pos:"noun phrase", term:"custom silicon", def:"Computer chips designed specifically to meet one company's needs, rather than bought off the shelf.", kr:"맞춤형 반도체", ex:"Broadcom builds custom silicon for hyperscalers like Google and Meta."},
+ {cat:"colloc", pos:"noun", term:"hyperscaler", def:"A company that operates massive, internet-scale cloud computing and data-center infrastructure.", kr:"대형 클라우드 사업자", ex:"Demand from hyperscalers is a major driver of AI chip and networking revenue."},
+ {cat:"colloc", pos:"noun", term:"capex", def:"Short for capital expenditure — money a company spends on long-term physical assets like factories, equipment, or data centers.", kr:"설비투자(자본적 지출)", ex:"Concerns about rising AI capex weighed on Oracle's share price this year."},
+ {cat:"colloc", pos:"noun", term:"re-rating", def:"A shift in how investors value a stock, usually seen as a change in its price-to-earnings multiple rather than its earnings themselves.", kr:"밸류에이션 재평가", ex:"GlobalFoundries received a re-rating in 2026 on excitement about silicon photonics."},
+ {cat:"colloc", pos:"noun", term:"backtest", def:"To test how an investment strategy would have performed using historical price data.", kr:"과거 데이터로 검증(백테스트)하다", ex:"The blended VanQuad return was estimated using a simple ten-year backtest, not a live track record."},
+ {cat:"colloc", pos:"noun phrase", term:"liquidity buffer", def:"A reserve of easily-accessible cash or safe assets kept on hand so you're not forced to sell other investments at a bad time.", kr:"비상용 현금 완충장치", ex:"Buffett's 10% short-term bond allocation functions as a liquidity buffer for his wife's trustee."},
+ {cat:"colloc", pos:"prepositional phrase", term:"under the surface / under the hood", def:"Beneath the headline index level — what individual stocks, sectors, and market internals are actually doing, as opposed to what the top-line number shows.", kr:"지수 이면에서, 속을 들여다보면", ex:"The S&P 500 can close flat for the week while under the surface money quietly rotates out of mega-cap tech and into industrials and financials."},
+ {cat:"colloc", pos:"noun phrase", term:"sector rotation", def:"Money moving out of one sector and into another, often leaving the overall index level roughly unchanged even though the mix underneath has shifted meaningfully.", kr:"섹터 간 자금 이동(섹터 로테이션)", ex:"When money rotates from mega-cap tech into industrials and financials, the S&P 500 can look flat even though the leadership underneath has completely changed."},
+ {cat:"colloc", pos:"noun phrase", term:"narrow leadership", def:"A market being driven higher by only a small handful of stocks, while the average stock lags — often a warning sign about the durability of the move.", kr:"소수 종목이 지수를 견인하는 상태", ex:"The S&P 500 makes a new high driven by a handful of mega-caps, while the equal-weighted S&P and the advance/decline line are actually deteriorating — narrow leadership hidden by cap-weighting."},
+ {cat:"colloc", pos:"noun phrase", term:"advance/decline line", def:"A running total of the number of stocks going up minus the number going down, used to gauge how broadly the market is participating in a move.", kr:"상승·하락 종목 지표 (A/D 라인)", ex:"Common breadth measures include the advance/decline line, the percentage of stocks trading above their 50- or 200-day moving average, and the ratio of new highs to new lows."},
+ {cat:"colloc", pos:"noun phrase", term:"interest coverage", def:"How comfortably a company can pay the interest on its debt out of its operating earnings, usually measured as EBIT or EBITDA divided by interest expense.", kr:"이자보상배율", ex:"High interest coverage (EBIT or EBITDA divided by interest expense — can the company comfortably service its debt?)"},
+ {cat:"colloc", pos:"noun phrase", term:"strong balance sheet", def:"A financial profile marked by low debt relative to assets and plenty of liquid resources, meaning the company can absorb shocks without needing outside capital.", kr:"재무구조가 탄탄한", ex:"A strong balance sheet — low net leverage plus healthy liquidity — is one of the four quality factors used to identify financially resilient companies that don't need to rely on outside capital."},
+ {cat:"colloc", pos:"noun phrase", term:"ample cash flow", def:"Robust and consistent free cash flow generation, where reported profits are actually turning into cash the company can spend, save, or return to shareholders.", kr:"현금창출력이 풍부한", ex:"Ample cash flow — meaning robust free cash flow generation and reliable conversion of earnings into cash — lets a company self-fund its operations without tapping outside capital."},
+ {cat:"colloc", pos:"noun phrase", term:"cross-sectional variation", def:"The differences observed across a set of items at a single point in time — here, across stocks — as opposed to differences across time for a single item.", kr:"종목 간(횡단면) 편차", ex:"Quality-factor cohorts explain more of the cross-sectional variation in stock returns than the traditional sector cohorts used by most analysts."},
+ {cat:"colloc", pos:"noun phrase", term:"cash conversion", def:"How efficiently a company turns its reported profits into actual cash; two companies with the same earnings can convert very different amounts to cash.", kr:"이익의 현금 전환력", ex:"Nvidia and Apple both sit in Mag 7 but have very different cash conversion, capex intensity, and balance sheet profiles."},
+ {cat:"colloc", pos:"verb phrase", term:"grind sideways", def:"To trade in a narrow, flat range for an extended stretch, with no clear direction up or down.", kr:"방향성 없이 횡보하다", ex:"The S&P 500 has been grinding sideways for weeks, but under the hood a widening group of industrial and financial names are quietly breaking out to new highs."},
+ {cat:"colloc", pos:"verb phrase", term:"slice the equity universe", def:"To divide up all the stocks in a market into groups for analysis, using whichever criteria — sector, size, factor — you find most informative.", kr:"주식 종목군을 어떻게 나눌 것인가", ex:"Rather than slicing the equity universe by GICS sector, you can group stocks by quality factors like interest coverage and cash conversion — which often explain more of the return spread than sector labels do."},
+ {cat:"colloc", pos:"verb phrase", term:"pull away from", def:"To outpace something and widen the gap over time — often used when strong performers leave weaker ones behind as conditions change.", kr:"격차를 벌리며 앞서 나가다", ex:"When refinancing is expensive, companies that can self-fund pull away from those that can't."},
+ {cat:"colloc", pos:"verb phrase", term:"beat analyst expectations / beat estimates", def:"To report financial results that come in better than what analysts had forecast.", kr:"애널리스트 예상치를 상회하다", ex:"All six major U.S. banks beat analyst expectations when they reported second-quarter earnings this week."},
+ {cat:"colloc", pos:"verb phrase", term:"post quarterly results / figures", def:"To officially release a company's financial performance for a three-month period.", kr:"분기 실적을 발표하다", ex:"Citigroup posted its strongest quarterly revenue in a decade."},
+ {cat:"colloc", pos:"noun phrase", term:"profitability boost", def:"An improvement in how much profit a company generates relative to its revenue or costs.", kr:"수익성 개선", ex:"Investors are looking for a profitability boost among the tech companies driving heavy AI spending."},
+ {cat:"colloc", pos:"adjective", term:"range-bound", def:"Synonyms: stuck in a channel, trapped in a band, boxed in, confined to a narrow range. Trading between a defined floor and ceiling without decisively breaking either — prices oscillate inside the band instead of trending.", kr:"박스권에 갇힌", ex:"The macro backdrop and broader equity market have remained stalled and range-bound for the past couple of months."},
+ {cat:"colloc", pos:"noun phrase", term:"macro backdrop", def:"Synonyms: macro environment, big-picture setting, overall economic context. The wider economic and policy conditions — growth, inflation, interest rates, geopolitics — against which individual markets and securities trade.", kr:"거시 환경(매크로 배경)", ex:"The macro backdrop and broader equity market have remained stalled and range-bound for the past couple of months."},
+ {cat:"colloc", pos:"noun phrase", term:"holding pattern", def:"Synonyms: wait-and-see mode, treading water, sitting on the sidelines, in limbo. A stretch where prices or decisions stay roughly where they are while participants wait for a resolution or catalyst.", kr:"관망 국면, 대기 상태", ex:"The macro backdrop and equity markets have remained in a holding pattern, oscillating within a narrow range for the past couple of months."},
+ {cat:"colloc", pos:"verb phrase", term:"tighten oversight", def:"Synonyms: step up regulation, ramp up supervision, tighten the reins, crack down. To make regulatory rules and monitoring stricter, typically after a failure or scandal exposes gaps in the existing regime.", kr:"감독(규제)을 강화하다", ex:"Tightening oversight on regional banks only after the March collapses felt like locking the barn door when the horse was already out — the systemic damage had already rippled through the sector."},
+ {cat:"colloc", pos:"noun phrase", term:"inflation expectations", def:"Synonyms: expected inflation, inflation psychology, forward inflation views. What households, firms, and investors believe inflation will run at going forward — central banks watch this closely because it feeds directly into wage-setting and pricing behavior.", kr:"인플레이션 기대심리", ex:"By the time the Fed pivoted to a hawkish stance, critics argued the horse was already out of the barn, with inflation expectations firmly embedded in wage negotiations."},
+ {cat:"colloc", pos:"noun phrase", term:"thin trading", def:"Synonyms: light volume, quiet tape, low-liquidity session, summer doldrums. Trading conditions with few participants and low volume, so relatively small orders can push prices around and moves lack conviction.", kr:"거래가 한산한 장세", ex:"Ten-year Treasury yields have been wiggling and jiggling around the 4.2% mark all week, unable to break decisively higher or lower amid thin summer trading."},
+ {cat:"colloc", pos:"verb phrase", term:"break decisively (higher / lower)", def:"Synonyms: break out cleanly, break through with conviction, make a clean break. For a price to move past a key technical level with enough force and follow-through to signal a real change in direction, rather than briefly poking through and reversing.", kr:"방향을 잡고 확실히 뚫고 나가다", ex:"Ten-year Treasury yields have been wiggling and jiggling around the 4.2% mark all week, unable to break decisively higher or lower amid thin summer trading."},
+ {cat:"colloc", pos:"phrasal verb", term:"ripple through", def:"Synonyms: spread through, spill over into, wash through, cascade across. For a shock or effect to propagate outward from a single event across a wider system, hitting connected parts one after another.", kr:"(충격이) ~전반으로 번지다", ex:"Tightening oversight on regional banks only after the March collapses felt like locking the barn door when the horse was already out — the systemic damage had already rippled through the sector."},
+ {cat:"colloc", pos:"verb phrase", term:"parse conflicting signals", def:"Synonyms: sift through mixed signals, weigh contradictory data, read the tea leaves. To carefully analyze data or news that points in opposite directions in order to figure out what it means for markets.", kr:"엇갈리는 신호를 해석하다", ex:"The dollar continued to wiggle and jiggle against major peers on Friday, as traders parsed conflicting signals from the latest jobs report and manufacturing data."},
+
+ {cat:"idiom", pos:"idiom", term:"picks-and-shovels play", def:"Synonyms: an infrastructure play, a supplier bet. An investment in a company that supplies the tools an industry needs, rather than the industry's flashier end-product companies — named after merchants who sold equipment to gold miners.", kr:"노다지보다 곡괭이를 파는 전략", ex:"Analysts describe Broadcom as a picks-and-shovels beneficiary of the AI data-center boom."},
+ {cat:"idiom", pos:"idiom", term:"coiled spring", def:"Synonyms: primed to rebound, poised to snap back. Something under pressure and ready to bounce back sharply once conditions improve.", kr:"반등을 앞두고 잔뜩 눌려있는 상태", ex:"Oracle was described as a coiled spring after falling sharply on capex worries."},
+ {cat:"idiom", pos:"phrasal verb", term:"shrug off", def:"Synonyms: brush off, not be fazed by, ride out. To not be significantly harmed or affected by something negative.", kr:"대수롭지 않게 넘기다", ex:"Arya's 2022 thesis bet that strong chip demand could shrug off short-term macro headwinds."},
+ {cat:"idiom", pos:"noun / verb", term:"tailwind / headwind", def:"Synonyms: tailwind = boost, favorable push; headwind = obstacle, drag. Borrowed from aviation — a tailwind speeds you forward, a headwind slows you down.", kr:"순풍 / 역풍", ex:"Rising inflation and supply-chain issues were headwinds for semiconductor stocks in 2022."},
+ {cat:"idiom", pos:"noun", term:"zeitgeist", def:"Synonyms: the spirit of the times, the prevailing mood. The defining spirit or set of ideas characteristic of a particular period.", kr:"시대적 분위기(시대정신)", ex:"Tracking which stock-market acronym is trending is a rough way of reading the market's current zeitgeist."},
+ {cat:"idiom", pos:"idiom", term:"rapid paddling under the surface", def:"Synonyms: calm above and chaos below, quiet on top but busy underneath, placid surface with frantic effort beneath. From the image of a duck gliding on a pond while paddling furiously underwater — a headline index that looks unchanged while sectors and stocks churn violently beneath it.", kr:"겉은 잔잔한데 속에선 요란한 움직임", ex:"The S&P 500 finished the week nearly flat, but there was rapid paddling under the surface — energy names sold off sharply while regional banks quietly rallied."},
+ {cat:"idiom", pos:"adjective pair", term:"cash-gushing / cash-burning", def:"Synonyms: cash-gushing = minting cash, throwing off cash, a cash cow; cash-burning = burning through cash, cash-negative, unprofitable growth. Two opposite descriptions of a business's cash profile — one throws off far more cash than it needs, the other spends cash faster than it earns.", kr:"현금을 쏟아내는 회사 / 현금을 태우는 회사", ex:"Within 'tech,' a cash-gushing name like Oracle or Microsoft and a cash-burning early-growth name behave nothing alike when rates move or credit spreads widen."},
+ {cat:"idiom", pos:"idiom", term:"money is (was) free", def:"Synonyms: zero-rate era, easy-money environment, credit is dirt-cheap, near-costless borrowing. A shorthand for very low interest rates, when borrowing is so cheap that weak balance sheets can be rolled over without real cost or discipline.", kr:"초저금리 시대, 돈이 공짜인 시절", ex:"When money was free, weak balance sheets could be refinanced cheaply and the distinction mattered less."},
+ {cat:"idiom", pos:"verb phrase", term:"bundle differences away", def:"Synonyms: paper over distinctions, gloss over differences, smooth away nuance, lump together. To hide meaningful internal variation inside a single broad label, so that important distinctions between the members of a group disappear from view.", kr:"개별 차이를 뭉뚱그려 없애다", ex:"Sector and thematic labels bundle away the real differences in cash conversion, leverage, and profitability that actually drive returns, treating Mag 7 members as if they were interchangeable."},
+ {cat:"idiom", pos:"idiom", term:"the calm surface isn't telling the full story", def:"Synonyms: the top-line hides what's really going on, don't take the index at face value, appearances can mislead. A reminder that a quiet headline number can conceal important activity underneath — narrowing leadership, rotation, or deteriorating breadth.", kr:"겉모습만 봐선 실상을 알 수 없다", ex:"Narrowing leadership or deteriorating breadth beneath a steady index is often a warning sign that the calm surface isn't telling the full story."},
+ {cat:"idiom", pos:"idiom/jargon", term:"whisper numbers", def:"Synonyms: unofficial estimates, the informal 'real' bar. Unofficial earnings forecasts circulating among institutional investors, often set higher than the official consensus estimate.", kr:"비공식으로 도는 눈높이(속칭 위스퍼 넘버)", ex:"Some investors now care less about the official consensus and more about beating the market's whisper numbers."},
+ {cat:"idiom", pos:"idiom", term:"scale new heights", def:"Synonyms: hit a fresh record, reach new peaks. To rise to a new all-time high level.", kr:"사상 최고치를 경신하다", ex:"Even as the broad market scales new heights, individual companies face a higher bar to justify their valuations."},
+ {cat:"idiom", pos:"idiom", term:"set the bar (high)", def:"Synonyms: raise expectations, up the ante. To establish a high standard that others must then meet or exceed.", kr:"눈높이(기준)를 높여놓다", ex:"Strong results in prior quarters have set the bar high for this earnings season."},
+ {cat:"idiom", pos:"phrasal verb", term:"pull back", def:"Synonyms: retreat, ease off, dip slightly. For a stock or index to decline somewhat after a period of gains.", kr:"숨 고르기(소폭 하락)하다", ex:"Morgan Stanley shares pulled back slightly on Wednesday even after beating earnings estimates."},
+ {cat:"idiom", pos:"idiom", term:"stuck and churning", def:"Synonyms: stalled and range-bound, mired in a directionless choppy range, grinding sideways with elevated churn, spinning wheels. A market that has stopped trending in either direction and is instead thrashing back and forth inside a narrow band — plenty of movement, no progress.", kr:"정체된 채 방향성 없이 등락만 반복하는", ex:"Equity markets have been stuck and churning since the last FOMC meeting, as investors weigh mixed inflation data against fading recession fears."},
+ {cat:"idiom", pos:"idiom", term:"the horse is (already) out of the barn", def:"Synonyms: closing (or locking) the barn door after the horse has bolted, too little too late, after the fact, shutting the stable door after the horse has bolted. A response or precaution that arrives only after the damage is done and can no longer prevent what it was meant to stop.", kr:"이미 때가 늦은, 사후약방문", ex:"By the time the Fed pivoted to a hawkish stance, critics argued the horse was already out of the barn, with inflation expectations firmly embedded in wage negotiations."},
+ {cat:"idiom", pos:"idiom", term:"wiggle and jiggle", def:"Synonyms: bob around, drift back and forth, oscillate without conviction, chop around. Small, indecisive up-and-down movements — a price that keeps twitching inside a narrow band without committing to a real direction.", kr:"소폭으로 이리저리 흔들리다", ex:"The dollar continued to wiggle and jiggle against major peers on Friday, as traders parsed conflicting signals from the latest jobs report and manufacturing data."},
+ {cat:"idiom", pos:"verb phrase", term:"mired in", def:"Synonyms: bogged down in, stuck in, trapped in, wallowing in. Deeply and uncomfortably caught in a situation that's hard to escape — often used of markets caught in slumps, ranges, or drawn-out consolidations.", kr:"~에 빠져 헤어나오지 못하는", ex:"For the past couple of months, the macro backdrop and broader equities have been mired in a directionless, choppy range."},
+];
+
+const CATS = [
+  {key:"all", label:"all"},
+  {key:"core", label:"core vocab"},
+  {key:"colloc", label:"collocations"},
+  {key:"idiom", label:"idioms"},
+];
+
+let activeCat = "all";
+let sortMode = "original"; // "original" | "az"
+let pool = [];
+let idx = 0;
+let flipped = false;
+
+function buildPool(){
+  pool = (activeCat === "all") ? DECK.slice() : DECK.filter(c => c.cat === activeCat);
+  if(sortMode === "az"){
+    pool.sort((a,b) => a.term.localeCompare(b.term, 'en', {sensitivity:'base'}));
+  }
+  idx = 0;
+  flipped = false;
+}
+
+function updateSortButton(){
+  const btn = document.getElementById('sort');
+  if(sortMode === "az"){
+    btn.textContent = "A→Z ✓";
+    btn.classList.add("active");
+  } else {
+    btn.textContent = "A→Z";
+    btn.classList.remove("active");
+  }
+}
+
+function render(){
+  const c = pool[idx];
+  document.getElementById('tagFront').textContent = c.cat === 'core' ? 'core vocab' : (c.cat === 'colloc' ? 'collocation' : 'idiom');
+  document.getElementById('tagBack').textContent = document.getElementById('tagFront').textContent;
+  document.getElementById('posFront').textContent = c.pos;
+  document.getElementById('posBack').textContent = c.pos;
+  document.getElementById('termFront').textContent = c.term;
+  document.getElementById('defBack').textContent = c.def;
+  document.getElementById('krBack').textContent = c.kr;
+  document.getElementById('exBack').textContent = '"' + c.ex + '"';
+  document.getElementById('counter').textContent = (idx+1) + ' / ' + pool.length;
+  document.getElementById('card').classList.remove('flipped');
+  flipped = false;
+}
+
+function renderTabs(){
+  const tabsEl = document.getElementById('tabs');
+  tabsEl.innerHTML = '';
+  CATS.forEach(cat => {
+    const b = document.createElement('div');
+    b.className = 'tab' + (cat.key === activeCat ? ' active' : '');
+    b.textContent = cat.label;
+    b.onclick = () => { activeCat = cat.key; buildPool(); render(); renderTabs(); };
+    tabsEl.appendChild(b);
+  });
+}
+
+document.getElementById('card').onclick = () => {
+  flipped = !flipped;
+  document.getElementById('card').classList.toggle('flipped', flipped);
+};
+document.getElementById('next').onclick = (e) => { e.stopPropagation(); idx = (idx+1) % pool.length; render(); };
+document.getElementById('prev').onclick = (e) => { e.stopPropagation(); idx = (idx-1+pool.length) % pool.length; render(); };
+document.getElementById('shuffle').onclick = (e) => {
+  e.stopPropagation();
+  sortMode = "original";
+  updateSortButton();
+  for(let i = pool.length-1; i>0; i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  idx = 0; render();
+};
+document.getElementById('sort').onclick = (e) => {
+  e.stopPropagation();
+  sortMode = (sortMode === "az") ? "original" : "az";
+  updateSortButton();
+  buildPool();
+  render();
+};
+
+buildPool();
+renderTabs();
+updateSortButton();
+render();
+</script>
+</body>
+</html>
