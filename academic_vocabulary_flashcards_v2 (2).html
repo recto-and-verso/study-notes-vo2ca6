@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>The Lectern — Academic & Professional Vocabulary Flashcards</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F7F4EC;
+    --card:#FFFDF8;
+    --ink:#232019;
+    --ink-soft:#5B564C;
+    --rule:#C9C2AE;
+    --forest:#2C4A3E;
+    --forest-ink:#173428;
+    --forest-tint:#E4ECE7;
+    --gold:#A8763E;
+    --gold-tint:#F3E7D6;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Mono',monospace;padding:1.5rem 0;}
+  .wrap{max-width:640px;margin:0 auto;padding:0 1rem;}
+  .masthead{display:flex;align-items:baseline;justify-content:space-between;border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:1.25rem;}
+  .masthead h1{font-family:'Source Serif 4',serif;font-size:22px;font-weight:600;margin:0;letter-spacing:.2px;}
+  .masthead span{font-size:11px;color:var(--ink-soft);}
+  .tabs{display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;}
+  .tab{font-family:'IBM Plex Mono',monospace;font-size:12px;padding:6px 12px;border:1px solid var(--rule);border-radius:2px;background:var(--card);color:var(--ink-soft);cursor:pointer;}
+  .tab.active{background:var(--forest);color:#fff;border-color:var(--forest);}
+  .counter{font-size:12px;color:var(--ink-soft);text-align:center;margin-bottom:10px;}
+  .stage{perspective:1400px;height:300px;margin-bottom:1.1rem;}
+  .card{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.4,.2,.2,1);cursor:pointer;}
+  .card.flipped{transform:rotateY(180deg);}
+  .face{position:absolute;inset:0;backface-visibility:hidden;background:var(--card);border:1px solid var(--rule);border-radius:6px;padding:1.5rem;display:flex;flex-direction:column;box-shadow:0 1px 0 var(--rule);}
+  .face::before{content:'';position:absolute;top:14px;left:50%;transform:translateX(-50%);width:16px;height:16px;border-radius:50%;background:var(--paper);border:1px solid var(--rule);}
+  .front{justify-content:center;align-items:center;text-align:center;gap:.6rem;}
+  .back{transform:rotateY(180deg);justify-content:flex-start;padding-top:2.4rem;}
+  .tag{font-size:10px;letter-spacing:.08em;text-transform:uppercase;background:var(--gold-tint);color:var(--gold);padding:3px 8px;border-radius:2px;position:absolute;top:14px;left:14px;}
+  .pos{font-size:11px;color:var(--ink-soft);position:absolute;top:14px;right:14px;font-style:italic;}
+  .term{font-family:'Source Serif 4',serif;font-size:28px;font-weight:600;line-height:1.25;}
+  .hint{font-size:11px;color:var(--ink-soft);margin-top:6px;}
+  .def{font-family:'Source Serif 4',serif;font-size:16px;line-height:1.55;margin:0 0 .9rem;}
+  .kr{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--gold);background:var(--gold-tint);display:inline-block;padding:3px 9px;border-radius:2px;margin-bottom:.8rem;}
+  .ex{border-left:2px solid var(--forest);padding-left:10px;font-size:13px;color:var(--forest-ink);line-height:1.5;font-style:italic;}
+  .controls{display:flex;align-items:center;justify-content:center;gap:10px;}
+  button.nav{font-family:'IBM Plex Mono',monospace;font-size:13px;padding:8px 16px;border:1px solid var(--ink);background:var(--card);color:var(--ink);border-radius:2px;cursor:pointer;}
+  button.nav:hover{background:var(--forest-tint);}
+  button.nav:active{transform:scale(.98);}
+  button.shuffle,button.sort{border-color:var(--rule);color:var(--ink-soft);}
+  button.sort.active{background:var(--forest);color:#fff;border-color:var(--forest);}
+  .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h2 class="sr-only">Interactive flashcard deck of academic and professional English vocabulary and collocations, sorted by category, with a flip-to-reveal definition and example sentence, plus navigation and shuffle controls.</h2>
+  <div class="masthead">
+    <h1>The Lectern</h1>
+    <span id="dateline">VOL. 1 · ACADEMIC &amp; PROFESSIONAL</span>
+  </div>
+  <div class="tabs" id="tabs"></div>
+  <div class="counter" id="counter"></div>
+  <div class="stage">
+    <div class="card" id="card">
+      <div class="face front">
+        <div class="tag" id="tagFront"></div>
+        <div class="pos" id="posFront"></div>
+        <div class="term" id="termFront"></div>
+        <div class="hint">tap card to reveal definition</div>
+      </div>
+      <div class="face back">
+        <div class="tag" id="tagBack"></div>
+        <div class="pos" id="posBack"></div>
+        <p class="def" id="defBack"></p>
+        <div class="kr" id="krBack"></div>
+        <div class="ex" id="exBack"></div>
+      </div>
+    </div>
+  </div>
+  <div class="controls">
+    <button class="nav" id="prev"><i class="ti ti-arrow-left" aria-hidden="true"></i> prev</button>
+    <button class="nav shuffle" id="shuffle">shuffle</button>
+    <button class="nav sort" id="sort">A→Z</button>
+    <button class="nav" id="next">next <i class="ti ti-arrow-right" aria-hidden="true"></i></button>
+  </div>
+</div>
+<script>
+const DECK = [
+ {cat:"colloc", pos:"verb phrase", term:"put into practice", def:"Synonyms: implement, apply, operationalize, translate theory into action, act on. To take an idea, model, or plan and actually enact it in the real world — the exact register 'implement' covers in a paper or presentation.", kr:"실제 적용하다, 실행에 옮기다", ex:"The WHO's 2015 Global Action Plan on Antimicrobial Resistance set out clear stewardship principles, but most national health systems have struggled to put them into practice at the level of individual prescribing decisions."},
+ {cat:"colloc", pos:"phrasal verb", term:"carry out", def:"Synonyms: conduct, execute, perform, undertake, complete. To take a study, experiment, procedure, or task from start to finish — the workhorse verb for describing completed research or fieldwork.", kr:"(연구·실험·조사를) 수행하다", ex:"In their landmark 1994 paper, economists David Card and Alan Krueger carried out a natural experiment comparing fast-food employment along the New Jersey–Pennsylvania border to test whether minimum-wage increases actually cost low-wage jobs."},
+ {cat:"colloc", pos:"verb phrase", term:"put in place", def:"Synonyms: establish, institute, roll out, set up, introduce. To formally set up a system, policy, or procedure so that it is actually operating — used of rules, protocols, and institutional arrangements.", kr:"(제도·시스템을) 마련하여 가동하다", ex:"The EU AI Act, which entered into force in August 2024, requires member states to put in place national supervisory authorities and conformity assessment procedures for high-risk AI systems on a staggered timeline through 2026."},
+ {cat:"idiom", pos:"phrasal verb", term:"follow through on", def:"Synonyms: deliver on, see through, act on to completion, make good on, execute all the way. Originally from the golf and tennis swing — to carry a commitment, plan, or recommendation all the way to actual results rather than announcing it and letting it drift.", kr:"(약속·권고를) 끝까지 이행하다", ex:"Boeing publicly committed to a sweeping safety-culture overhaul after the 737 MAX crashes in 2018 and 2019, but the January 2024 door-plug blowout on Alaska Airlines Flight 1282 raised fresh doubts about whether the company had followed through on those reforms."},
+ {cat:"idiom", pos:"verb phrase", term:"bring into play", def:"Synonyms: activate, deploy, put to work, engage, mobilize. Drawn from putting a piece onto the playing field or an actor onto the stage — to bring a tool, resource, or mechanism into active use so it starts shaping the outcome.", kr:"(자원·기법을) 본격 가동하여 활용하다", ex:"The James Webb Space Telescope brings into play near-infrared and mid-infrared instruments unavailable on Hubble, allowing astronomers to observe galaxies that formed within a few hundred million years of the Big Bang."},
+];
+
+const CATS = [
+  {key:"all", label:"all"},
+  {key:"core", label:"core vocab"},
+  {key:"colloc", label:"collocations"},
+  {key:"idiom", label:"idioms"},
+];
+
+let activeCat = "all";
+let sortMode = "original"; // "original" | "az"
+let pool = [];
+let idx = 0;
+let flipped = false;
+
+function buildPool(){
+  pool = (activeCat === "all") ? DECK.slice() : DECK.filter(c => c.cat === activeCat);
+  if(sortMode === "az"){
+    pool.sort((a,b) => a.term.localeCompare(b.term, 'en', {sensitivity:'base'}));
+  }
+  idx = 0;
+  flipped = false;
+}
+
+function updateSortButton(){
+  const btn = document.getElementById('sort');
+  if(sortMode === "az"){
+    btn.textContent = "A→Z ✓";
+    btn.classList.add("active");
+  } else {
+    btn.textContent = "A→Z";
+    btn.classList.remove("active");
+  }
+}
+
+function render(){
+  if(pool.length === 0){
+    document.getElementById('termFront').textContent = '(no cards in this category yet)';
+    document.getElementById('tagFront').textContent = '';
+    document.getElementById('posFront').textContent = '';
+    document.getElementById('counter').textContent = '0 / 0';
+    return;
+  }
+  const c = pool[idx];
+  document.getElementById('tagFront').textContent = c.cat === 'core' ? 'core vocab' : (c.cat === 'colloc' ? 'collocation' : 'idiom');
+  document.getElementById('tagBack').textContent = document.getElementById('tagFront').textContent;
+  document.getElementById('posFront').textContent = c.pos;
+  document.getElementById('posBack').textContent = c.pos;
+  document.getElementById('termFront').textContent = c.term;
+  document.getElementById('defBack').textContent = c.def;
+  document.getElementById('krBack').textContent = c.kr;
+  document.getElementById('exBack').textContent = '"' + c.ex + '"';
+  document.getElementById('counter').textContent = (idx+1) + ' / ' + pool.length;
+  document.getElementById('card').classList.remove('flipped');
+  flipped = false;
+}
+
+function renderTabs(){
+  const tabsEl = document.getElementById('tabs');
+  tabsEl.innerHTML = '';
+  CATS.forEach(cat => {
+    const b = document.createElement('div');
+    b.className = 'tab' + (cat.key === activeCat ? ' active' : '');
+    b.textContent = cat.label;
+    b.onclick = () => { activeCat = cat.key; buildPool(); render(); renderTabs(); };
+    tabsEl.appendChild(b);
+  });
+}
+
+document.getElementById('card').onclick = () => {
+  if(pool.length === 0) return;
+  flipped = !flipped;
+  document.getElementById('card').classList.toggle('flipped', flipped);
+};
+document.getElementById('next').onclick = (e) => { e.stopPropagation(); if(pool.length === 0) return; idx = (idx+1) % pool.length; render(); };
+document.getElementById('prev').onclick = (e) => { e.stopPropagation(); if(pool.length === 0) return; idx = (idx-1+pool.length) % pool.length; render(); };
+document.getElementById('shuffle').onclick = (e) => {
+  e.stopPropagation();
+  if(pool.length === 0) return;
+  sortMode = "original";
+  updateSortButton();
+  for(let i = pool.length-1; i>0; i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  idx = 0; render();
+};
+document.getElementById('sort').onclick = (e) => {
+  e.stopPropagation();
+  sortMode = (sortMode === "az") ? "original" : "az";
+  updateSortButton();
+  buildPool();
+  render();
+};
+
+buildPool();
+renderTabs();
+updateSortButton();
+render();
+</script>
+</body>
+</html>
