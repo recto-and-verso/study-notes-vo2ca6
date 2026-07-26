@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>The Loop — AI, Work & Cognition Vocabulary Flashcards</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F7F4EC;
+    --card:#FFFDF8;
+    --ink:#232019;
+    --ink-soft:#5B564C;
+    --rule:#C9C2AE;
+    --forest:#2C4A3E;
+    --forest-ink:#173428;
+    --forest-tint:#E4ECE7;
+    --gold:#A8763E;
+    --gold-tint:#F3E7D6;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Mono',monospace;padding:1.5rem 0;}
+  .wrap{max-width:640px;margin:0 auto;padding:0 1rem;}
+  .masthead{display:flex;align-items:baseline;justify-content:space-between;border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:1.25rem;}
+  .masthead h1{font-family:'Source Serif 4',serif;font-size:22px;font-weight:600;margin:0;letter-spacing:.2px;}
+  .masthead span{font-size:11px;color:var(--ink-soft);}
+  .tabs{display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;}
+  .tab{font-family:'IBM Plex Mono',monospace;font-size:12px;padding:6px 12px;border:1px solid var(--rule);border-radius:2px;background:var(--card);color:var(--ink-soft);cursor:pointer;}
+  .tab.active{background:var(--forest);color:#fff;border-color:var(--forest);}
+  .counter{font-size:12px;color:var(--ink-soft);text-align:center;margin-bottom:10px;}
+  .stage{perspective:1400px;height:400px;margin-bottom:1.1rem;}
+  .card{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.4,.2,.2,1);cursor:pointer;}
+  .card.flipped{transform:rotateY(180deg);}
+  .face{position:absolute;inset:0;backface-visibility:hidden;background:var(--card);border:1px solid var(--rule);border-radius:6px;padding:1.5rem;display:flex;flex-direction:column;box-shadow:0 1px 0 var(--rule);}
+  .face::before{content:'';position:absolute;top:14px;left:50%;transform:translateX(-50%);width:16px;height:16px;border-radius:50%;background:var(--paper);border:1px solid var(--rule);}
+  .front{justify-content:center;align-items:center;text-align:center;gap:.6rem;}
+  .back{transform:rotateY(180deg);justify-content:flex-start;padding-top:2.4rem;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--rule) transparent;}
+  .back::-webkit-scrollbar{width:6px;}
+  .back::-webkit-scrollbar-thumb{background:var(--rule);border-radius:3px;}
+  .back::-webkit-scrollbar-track{background:transparent;}
+  .tag{font-size:10px;letter-spacing:.08em;text-transform:uppercase;background:var(--gold-tint);color:var(--gold);padding:3px 8px;border-radius:2px;position:absolute;top:14px;left:14px;}
+  .pos{font-size:11px;color:var(--ink-soft);position:absolute;top:14px;right:14px;font-style:italic;}
+  .term{font-family:'Source Serif 4',serif;font-size:28px;font-weight:600;line-height:1.25;}
+  .hint{font-size:11px;color:var(--ink-soft);margin-top:6px;}
+  .def{font-family:'Source Serif 4',serif;font-size:16px;line-height:1.55;margin:0 0 .9rem;}
+  .kr{font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--gold);background:var(--gold-tint);display:inline-block;padding:3px 9px;border-radius:2px;margin-bottom:.8rem;}
+  .ex{border-left:2px solid var(--forest);padding-left:10px;font-size:13px;color:var(--forest-ink);line-height:1.5;font-style:italic;}
+  .controls{display:flex;align-items:center;justify-content:center;gap:10px;}
+  button.nav{font-family:'IBM Plex Mono',monospace;font-size:13px;padding:8px 16px;border:1px solid var(--ink);background:var(--card);color:var(--ink);border-radius:2px;cursor:pointer;}
+  button.nav:hover{background:var(--forest-tint);}
+  button.nav:active{transform:scale(.98);}
+  button.shuffle,button.sort{border-color:var(--rule);color:var(--ink-soft);}
+  button.sort.active{background:var(--forest);color:#fff;border-color:var(--forest);}
+  .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h2 class="sr-only">Interactive flashcard deck of vocabulary and collocations from discussions of AI, cognitive debt, and modern knowledge work, sorted by category, with a flip-to-reveal definition and example sentence, plus navigation and shuffle controls.</h2>
+  <div class="masthead">
+    <h1>The Loop</h1>
+    <span id="dateline">VOL. 1 · AI, WORK &amp; COGNITION</span>
+  </div>
+  <div class="tabs" id="tabs"></div>
+  <div class="counter" id="counter"></div>
+  <div class="stage">
+    <div class="card" id="card">
+      <div class="face front">
+        <div class="tag" id="tagFront"></div>
+        <div class="pos" id="posFront"></div>
+        <div class="term" id="termFront"></div>
+        <div class="hint">tap card to reveal definition</div>
+      </div>
+      <div class="face back">
+        <div class="tag" id="tagBack"></div>
+        <div class="pos" id="posBack"></div>
+        <p class="def" id="defBack"></p>
+        <div class="kr" id="krBack"></div>
+        <div class="ex" id="exBack"></div>
+      </div>
+    </div>
+  </div>
+  <div class="controls">
+    <button class="nav" id="prev"><i class="ti ti-arrow-left" aria-hidden="true"></i> prev</button>
+    <button class="nav shuffle" id="shuffle">shuffle</button>
+    <button class="nav sort" id="sort">A→Z</button>
+    <button class="nav" id="next">next <i class="ti ti-arrow-right" aria-hidden="true"></i></button>
+  </div>
+</div>
+<script>
+const DECK = [
+ {cat:"core", pos:"noun phrase", term:"cognitive debt", def:"The gradual erosion of critical thinking, domain expertise, and problem-solving capacity that accumulates when people repeatedly outsource first-principles reasoning to AI — the mental effort feels avoided, but is really just deferred.", kr:"인지 부채", ex:"Kosmyna and colleagues at MIT Media Lab named the effect 'cognitive debt' in their 2025 paper 'Your Brain on ChatGPT,' where heavy LLM users displayed the weakest EEG connectivity of the three groups tested."},
+ {cat:"core", pos:"noun", term:"cognitive offloading", def:"The habit of handing mental work — remembering, calculating, reasoning, drafting — over to an external tool like AI or a search engine, which frees working memory but reduces active engagement with the material.", kr:"인지 오프로딩(사고 외주화)", ex:"Gerlich's 2025 mixed-methods study in Societies, drawing on 666 participants, revealed a significant negative correlation between frequent AI tool usage and critical thinking abilities, mediated by increased cognitive offloading."},
+ {cat:"core", pos:"noun phrase", term:"automation bias", def:"The tendency to default to accepting an automated system's output because reviewing it feels mentally cheaper than generating an independent analysis of one's own.", kr:"자동화 편향", ex:"In one controlled radiology study cited in a 2026 scoping review, erroneous AI prompts increased false-positive recalls by up to 12% even among experienced readers — a textbook case of automation bias."},
+ {cat:"core", pos:"noun / verb", term:"deskilling", def:"The gradual loss of a practitioner's unassisted competence at a task after they have come to rely on automation to help perform it — often invisible until the tool is unavailable.", kr:"숙련도 저하(탈숙련화)", ex:"The 2025 Lancet Gastroenterology & Hepatology study found adenoma detection rates fell by 6% for colonoscopies performed without AI assistance three months after AI was introduced across four centres — the first real-world evidence of automation-induced deskilling tied to patient outcomes."},
+ {cat:"core", pos:"verb / noun", term:"atrophy", def:"To gradually waste away or weaken from lack of use; the resulting decline. In cognitive contexts, describes skills that fade because they aren't being exercised.", kr:"(능력이) 위축·퇴화되다", ex:"Microsoft framed the WTI 2026 finding directly: Frontier Professionals refuse to outsource their thinking, because they know long-term success means continuing to build human skills and not letting them atrophy."},
+ {cat:"core", pos:"adjective", term:"insidious", def:"Proceeding in a gradual, subtle way that is dangerous precisely because the harm isn't obvious while it's happening.", kr:"서서히 알게 모르게 해를 끼치는", ex:"What makes cognitive debt harder to notice than ordinary forgetting is that it doesn't feel like decline while it's happening — the pattern is insidious rather than obvious."},
+ {cat:"core", pos:"adjective", term:"metacognitive", def:"Relating to a person's awareness and monitoring of their own thinking — knowing what you know, checking your reasoning, and regulating how you learn.", kr:"메타인지의", ex:"Fan and colleagues' 2025 education paper describes 'metacognitive laziness' as what happens when learners become dependent on AI and offload metacognitive load, reducing engagement with their own thinking processes."},
+ {cat:"core", pos:"noun", term:"mediator (variable)", def:"In quantitative research, the intermediate mechanism through which one factor produces its effect on another — the 'X → M → Y' link that explains how the input reaches the outcome.", kr:"(통계) 매개 변수", ex:"Gerlich's 2025 study found a negative correlation between frequent AI use and critical thinking scores, with cognitive offloading acting as the statistical mediator between the two."},
+ {cat:"core", pos:"noun", term:"stewardship", def:"The careful, responsible management of something entrusted to your care; in AI contexts, taking active ownership of outputs — verifying, integrating, refining — rather than passively accepting them.", kr:"책임 관리, 청지기 역할", ex:"The Lee et al. CHI 2025 study describes the shift knowledge workers report under AI: from generating work themselves to a stewardship role focused on information verification, response integration, and quality control of AI output."},
+ {cat:"core", pos:"noun", term:"scaffolding (cognitive)", def:"A supporting structure that helps a learner or thinker do more than they could unaided, while still doing the core work themselves — designed to be dismantled once the skill is internalized.", kr:"(학습·사고의) 발판 지원", ex:"A 2026 theoretical paper distinguishes three patterns of AI use — passive offloading, guided co-construction, and reflective scaffolding — predicted to differentially contribute to or mitigate cognitive debt."},
+ {cat:"core", pos:"adjective pair", term:"reflexive / deliberate", def:"Reflexive: done automatically, by habit, without conscious thought. Deliberate: consciously chosen and reasoned about. In AI-use contexts, the two describe reaching for the tool by reflex versus by decision.", kr:"반사적인 / 의도적으로 판단해서 하는", ex:"Cognitive debt is not caused by AI use as such — it is caused by a specific style of AI use: reflexive, unstructured, and evaluation-poor, rather than deliberate."},
+ {cat:"core", pos:"adjective", term:"convergent (evidence / findings)", def:"Coming from different directions but pointing to the same conclusion; used of independent studies whose separate methods produce agreeing results.", kr:"여러 연구가 한 결론으로 수렴하는", ex:"The strength of the cognitive-debt argument no longer rests on a single striking EEG study — it rests on convergent findings from neuroscience, workplace surveys, and real-world clinical practice."},
+
+ {cat:"colloc", pos:"verb phrase", term:"outsource one's thinking", def:"Synonyms: hand your thinking over to a machine, let AI do the reasoning for you, defer cognition to the tool, farm out judgment. To let an AI system do the cognitive work you would otherwise do yourself — used with a warning tone in the cognitive-debt literature, since the deferred effort tends to come due.", kr:"사고 자체를 AI에 떠넘기다", ex:"Microsoft's WTI 2026 framing is direct: Frontier Professionals refuse to outsource their thinking, because they know long-term success means continuing to build human skills and not letting them atrophy."},
+ {cat:"colloc", pos:"verb phrase", term:"remain the thinker in the loop", def:"Synonyms: keep a hand on the wheel, stay actively engaged, keep a real human decision point in the process, don't rubber-stamp the output. To stay the one actually doing the reasoning and deciding, rather than letting an AI system run while you nod along.", kr:"판단의 주체 자리를 지키다", ex:"Both the MIT neuroscience data and the Microsoft workforce data trace cognitive debt to the same root: a failure to remain the thinker in the loop."},
+ {cat:"colloc", pos:"noun phrase", term:"first-principles reasoning", def:"Synonyms: reasoning from scratch, working it out from the fundamentals, building from ground truths rather than pattern-matching to templates or someone else's answer. Working a problem out from its underlying fundamentals rather than starting from an existing conclusion.", kr:"근본 원리에서부터 스스로 사고하기", ex:"Cognitive debt accumulates when people repeatedly outsource first-principles reasoning to AI — the immediate trade looks attractive, but the mental effort is deferred rather than eliminated."},
+ {cat:"colloc", pos:"noun phrase", term:"jagged (technological) frontier", def:"Synonyms: uneven capability surface, spiky performance profile, brilliant on some tasks and unreliable on adjacent-looking ones. The observation that AI capability is non-linear — a model can excel at one task and fail unpredictably at a very similar one, making uniform trust in its output dangerous.", kr:"능력이 들쭉날쭉한 AI 성능 지형", ex:"Dell'Acqua and colleagues' 2023 Harvard/BCG paper on the Jagged Frontier makes the point directly: cognitive debt compounds fastest when users treat AI as uniformly reliable across a surface where the illusion of competence is strongest precisely where verification is weakest."},
+ {cat:"colloc", pos:"noun phrase", term:"real-world evidence", def:"Synonyms: field data, evidence from actual practice, non-experimental clinical or workplace data, evidence outside the lab. Data collected from routine use of a technology or intervention in actual practice — as distinct from data generated inside a controlled experiment.", kr:"실제 임상·현장에서 나온 데이터", ex:"The 2025 Lancet colonoscopy paper is the first real-world evidence of AI-induced deskilling tied to patient outcomes, showing a 6% drop in unaided adenoma detection three months after AI was introduced."},
+ {cat:"colloc", pos:"noun phrase", term:"mixed-methods study", def:"Synonyms: combined quantitative and qualitative research, multi-method design. A research design that deliberately combines quantitative data (surveys, tests, numeric measures) with qualitative data (interviews, open-ended responses) to see the phenomenon from more than one angle.", kr:"양적·질적 방법을 결합한 혼합 연구", ex:"Gerlich's 2025 mixed-methods study in Societies, drawing on 666 participants, revealed a significant negative correlation between frequent AI tool usage and critical thinking abilities."},
+ {cat:"colloc", pos:"noun phrase", term:"observational study", def:"Synonyms: non-interventional study, real-world evidence design. A research design where investigators watch what happens under normal conditions without assigning treatments — the opposite of a controlled experiment.", kr:"관찰 연구(개입 없이 관찰만 하는 연구)", ex:"Budzyń and colleagues' multicentre observational study, published in The Lancet Gastroenterology & Hepatology in 2025, tracked what happened to gastroenterologists' unaided detection rates after three months of routine AI use."},
+ {cat:"colloc", pos:"noun phrase", term:"converging body of evidence", def:"Synonyms: independent studies pointing the same way, accumulating cross-method support, evidence from multiple angles agreeing. A collection of separate studies — using different methods, populations, and outcome measures — whose results all point in the same direction, giving the overall conclusion much more weight than any single study.", kr:"여러 독립 연구가 같은 결론으로 모여드는 근거", ex:"The MIT EEG experiment now sits inside a converging body of evidence from neuroscience, workplace surveys, and — most strikingly — real-world clinical practice."},
+ {cat:"colloc", pos:"verb phrase", term:"bolt onto (legacy processes)", def:"Synonyms: tack on, graft onto, staple to an existing workflow, retrofit awkwardly. To attach a new tool to an existing process without rethinking the process itself — usually implying the result is clunky and doesn't get the tool's full benefit.", kr:"기존 프로세스에 억지로 갖다 붙이다", ex:"WTI 2026 recommends redesigning workflows around AI rather than having AI bolted onto legacy processes — Frontier teams are nearly twice as likely as others to brainstorm which processes to rebuild (63% vs. 32%)."},
+ {cat:"colloc", pos:"verb phrase", term:"amplify reasoning (vs. substitute for it)", def:"Synonyms: augment rather than replace, extend your own thinking rather than doing it for you, work alongside rather than instead of. A framing used across the cognitive-debt literature — the healthy pattern is to use AI in a way that multiplies your own unaided thinking, not in a way that replaces it wholesale.", kr:"사고를 대체하지 않고 증폭시키는 방식으로 쓰기", ex:"The shift required is from passive substitution, where AI does the thinking, to active leverage, where AI amplifies unaided reasoning rather than substituting for it."},
+ {cat:"colloc", pos:"verb phrase", term:"set clear intent", def:"Synonyms: define the desired outcome, specify the quality bar up front, decide what 'good' looks like before starting. Deciding, before you engage the tool, what outcome and quality standard you're aiming for — a practice WTI 2026 identifies as the redefined core of knowledge work under AI.", kr:"목표와 기대 수준을 명확히 잡아두다", ex:"WTI 2026 argues that the most effective AI users won't be the ones who do more things faster — they'll be the ones who redefine their value around setting clear intent and designing how the work gets done across humans and AI."},
+ {cat:"colloc", pos:"verb phrase", term:"protect AI-free deep work zones", def:"Synonyms: carve out unassisted thinking time, block off tool-free stretches, ring-fence solo reasoning. Deliberately keeping some strategy, foundational logic, or nuanced writing work off-limits to AI so the underlying skills — the ones needed to write good prompts and detect bad outputs — stay sharp.", kr:"AI 없이 사고할 시간대를 따로 확보하다", ex:"Protecting AI-free deep work zones matters because these are precisely the muscles required to write good prompts and detect bad outputs — and the Lancet colonoscopy result showed those muscles can weaken within months when the tool never leaves the room."},
+ {cat:"colloc", pos:"verb phrase", term:"draft before prompting", def:"Synonyms: think first, prompt second; outline before you ask; front-load the human thinking. The practice of producing an outline, thesis, or first attempt on your own before opening the AI, so you approach its output as an evaluator rather than a passive receiver.", kr:"AI에 묻기 전에 먼저 스스로 초안부터 잡기", ex:"The MIT data supports drafting before prompting: participants who thought first and brought AI in second showed richer neural engagement than the reverse group."},
+
+ {cat:"idiom", pos:"idiom", term:"the (deferred) cost comes due", def:"Synonyms: the bill eventually lands, borrowed time runs out, you can't defer it forever, chickens come home to roost. A financial-debt metaphor applied to hidden or delayed costs of any kind — the idea that what feels free or postponed in the short run has to be paid at some point.", kr:"미뤄둔 대가는 결국 청구된다", ex:"The immediate trade looks attractive — faster drafts, quicker summaries, code in seconds — but the mental effort required to genuinely process information is deferred rather than eliminated, and over time the deferred cost comes due."},
+ {cat:"idiom", pos:"idiom", term:"mental muscles atrophy", def:"Synonyms: skills waste away from disuse, cognitive fitness declines, the muscles you don't use go slack, use it or lose it. A gym metaphor for what happens to cognitive skills when they aren't exercised — like physical muscles, they weaken and shrink when you stop using them.", kr:"안 쓰는 사고 근육은 위축된다", ex:"The consistent recommendation across the cognitive-debt research is to do some meaningful portion of work unaided so mental muscles don't atrophy — the same discipline WTI 2026 says separates Frontier Professionals from the rest."},
+ {cat:"idiom", pos:"idiom", term:"sparring partner", def:"Synonyms: a friendly opponent to test ideas against, a training partner, a foil, a critical interlocutor. A training partner in boxing — used metaphorically for something that pushes back on your thinking, tests it, and sharpens it, rather than doing the thinking for you.", kr:"사고를 단련시키는 스파링 상대", ex:"The MIT team's recommendation is to use AI as a sparring partner or scaffold — guided co-construction — rather than as a substitute for your own reasoning."},
+ {cat:"idiom", pos:"idiom", term:"through-line", def:"Synonyms: common thread, unifying idea, spine of the argument, red thread running through it. The single unifying idea that runs through a set of separate observations, studies, or events and ties them together.", kr:"전체를 관통하는 하나의 흐름", ex:"The through-line, across both the MIT neuroscience work and the Microsoft workplace data, is the same: the people who benefit most from AI are the ones who deliberately protect the parts of thinking they refuse to hand over."},
+ {cat:"idiom", pos:"idiom", term:"the tool never leaves the room", def:"Synonyms: no unaided reps, no tool-free practice, always on, never a break from assistance. A shorthand for the working condition where an aid is constantly present, so the operator never practices without it — the condition The Lancet colonoscopy study shows can produce measurable deskilling within months.", kr:"도구가 한시도 옆에서 떠나지 않는 상황", ex:"The Lancet colonoscopy result gives 'protect AI-free deep work zones' unusual force: skills degrade in months, not years, when the tool never leaves the room."},
+ {cat:"idiom", pos:"idiom", term:"the thinker in the loop", def:"Synonyms: the human decision point, the person actually doing the judging, the mind that stays engaged in the call. A pointed variation on the engineering phrase 'human-in-the-loop' — the version where the human isn't just physically present but is genuinely the one thinking, rather than rubber-stamping AI output.", kr:"판단 주체로서 자리를 지키는 사람", ex:"Both the MIT neuroscience data and the Microsoft workforce data trace cognitive debt to the same root: a failure to remain the thinker in the loop."},
+ {cat:"idiom", pos:"idiom", term:"treat every output as a draft, not an answer", def:"Synonyms: mark it up don't sign it, evaluate don't accept, review as an editor rather than a receiver. A stance recommended across the cognitive-debt literature — receiving AI output as raw material to interrogate and revise, rather than as a finished answer to adopt.", kr:"AI 결과물을 정답이 아니라 초안으로 대하다", ex:"The prescription both bodies of research point toward is the same: treat every output as a draft to evaluate rather than an answer to accept."},
+];
+
+const CATS = [
+  {key:"all", label:"all"},
+  {key:"core", label:"core vocab"},
+  {key:"colloc", label:"collocations"},
+  {key:"idiom", label:"idioms"},
+];
+
+let activeCat = "all";
+let sortMode = "original"; // "original" | "az"
+let pool = [];
+let idx = 0;
+let flipped = false;
+
+function buildPool(){
+  pool = (activeCat === "all") ? DECK.slice() : DECK.filter(c => c.cat === activeCat);
+  if(sortMode === "az"){
+    pool.sort((a,b) => a.term.localeCompare(b.term, 'en', {sensitivity:'base'}));
+  }
+  idx = 0;
+  flipped = false;
+}
+
+function updateSortButton(){
+  const btn = document.getElementById('sort');
+  if(sortMode === "az"){
+    btn.textContent = "A→Z ✓";
+    btn.classList.add("active");
+  } else {
+    btn.textContent = "A→Z";
+    btn.classList.remove("active");
+  }
+}
+
+function render(){
+  if(pool.length === 0){
+    document.getElementById('termFront').textContent = '(no cards in this category yet)';
+    document.getElementById('tagFront').textContent = '';
+    document.getElementById('posFront').textContent = '';
+    document.getElementById('counter').textContent = '0 / 0';
+    return;
+  }
+  const c = pool[idx];
+  document.getElementById('tagFront').textContent = c.cat === 'core' ? 'core vocab' : (c.cat === 'colloc' ? 'collocation' : 'idiom');
+  document.getElementById('tagBack').textContent = document.getElementById('tagFront').textContent;
+  document.getElementById('posFront').textContent = c.pos;
+  document.getElementById('posBack').textContent = c.pos;
+  document.getElementById('termFront').textContent = c.term;
+  document.getElementById('defBack').textContent = c.def;
+  document.getElementById('krBack').textContent = c.kr;
+  document.getElementById('exBack').textContent = '"' + c.ex + '"';
+  document.getElementById('counter').textContent = (idx+1) + ' / ' + pool.length;
+  document.getElementById('card').classList.remove('flipped');
+  flipped = false;
+}
+
+function renderTabs(){
+  const tabsEl = document.getElementById('tabs');
+  tabsEl.innerHTML = '';
+  CATS.forEach(cat => {
+    const b = document.createElement('div');
+    b.className = 'tab' + (cat.key === activeCat ? ' active' : '');
+    b.textContent = cat.label;
+    b.onclick = () => { activeCat = cat.key; buildPool(); render(); renderTabs(); };
+    tabsEl.appendChild(b);
+  });
+}
+
+document.getElementById('card').onclick = () => {
+  if(pool.length === 0) return;
+  flipped = !flipped;
+  document.getElementById('card').classList.toggle('flipped', flipped);
+};
+document.getElementById('next').onclick = (e) => { e.stopPropagation(); if(pool.length === 0) return; idx = (idx+1) % pool.length; render(); };
+document.getElementById('prev').onclick = (e) => { e.stopPropagation(); if(pool.length === 0) return; idx = (idx-1+pool.length) % pool.length; render(); };
+document.getElementById('shuffle').onclick = (e) => {
+  e.stopPropagation();
+  if(pool.length === 0) return;
+  sortMode = "original";
+  updateSortButton();
+  for(let i = pool.length-1; i>0; i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  idx = 0; render();
+};
+document.getElementById('sort').onclick = (e) => {
+  e.stopPropagation();
+  sortMode = (sortMode === "az") ? "original" : "az";
+  updateSortButton();
+  buildPool();
+  render();
+};
+
+buildPool();
+renderTabs();
+updateSortButton();
+render();
+</script>
+</body>
+</html>
